@@ -6,3 +6,11 @@ export const StyledContainer = styled.View`
 	height: 40px;
 	background-color: black;
 `;
+
+export const Input = styled.TextInput`
+	border: 1px solid black;
+	height: 40px;
+	font-size: 20px;
+	margin-top: 20px;
+	font-weight: 700;
+`;
