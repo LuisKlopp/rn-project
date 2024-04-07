@@ -12,12 +12,15 @@ interface TodoType {
 
 function App(): React.JSX.Element {
 	const [text, setText] = useState("");
+	const [editText, setEditText] = useState("");
+	const [editNumber, setEditNumber] = useState(0);
 	const [todoArray, setTodoArray] = useState<TodoType[]>([
 		{
 			todo: "이불개기",
 			id: 1,
 		},
 	]);
+
 	const isDarkMode = useColorScheme() === "dark";
 
 	const backgroundStyle = {
@@ -34,6 +37,20 @@ function App(): React.JSX.Element {
 		setTodoArray(filteredTodos);
 	};
 
+	const handleEditTodo = (id: number) => {
+		setEditNumber(id);
+	};
+
+	const handleEditDone = (id: number) => {
+		setEditNumber(0);
+		setTodoArray(prev =>
+			prev.map(todo => {
+				if (todo.id !== id) return todo;
+				return { ...todo, todo: editText };
+			}),
+		);
+	};
+
 	return (
 		<SafeAreaView style={backgroundStyle}>
 			<StatusBar
@@ -44,12 +61,23 @@ function App(): React.JSX.Element {
 				style={{
 					backgroundColor: isDarkMode ? Colors.black : Colors.white,
 				}}>
-				<S.Input onChangeText={text => setText(text)} onSubmitEditing={handleAddTodo} />
+				<S.Input onChangeText={text => setText(text)} onSubmitEditing={handleAddTodo} blurOnSubmit={false} />
 				<Button title="button" color="black" onPress={handleAddTodo} />
 				{todoArray.map(item => (
 					<View key={item.id} style={{ flexDirection: "row", alignItems: "center", height: 40 }}>
-						<Text key={item.id}>{item.todo}</Text>
-						<Button title="X" onPress={() => handleDeleteTodo(item.id)} />
+						{item.id === editNumber ? (
+							<View style={{ flexDirection: "row", alignItems: "center", height: 40 }}>
+								<S.Input style={{ width: 200, height: 20 }} onChangeText={editText => setEditText(editText)} />
+								<Button title="EditDone" onPress={() => handleEditDone(item.id)} />
+								<Button title="X" onPress={() => handleDeleteTodo(item.id)} />
+							</View>
+						) : (
+							<View style={{ flexDirection: "row", alignItems: "center", height: 40 }}>
+								<Text key={item.id}>{item.todo}</Text>
+								<Button title="Edit" onPress={() => handleEditTodo(item.id)} />
+								<Button title="X" onPress={() => handleDeleteTodo(item.id)} />
+							</View>
+						)}
 					</View>
 				))}
 			</View>
